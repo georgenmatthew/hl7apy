@@ -84,8 +84,14 @@ def parse_message(message, validation_level=None, find_groups=True, message_prof
     except InvalidName:
         m = Message(version=version, validation_level=validation_level,
                     encoding_chars=encoding_chars)
-    children = parse_segments(message, m.version, encoding_chars, validation_level,
-                              m.structure_by_name)
+    try:
+        children = parse_segments(message, m.version, encoding_chars, validation_level,
+                                  m.structure_by_name)
+    except InvalidName:
+        m = Message(name=message_structure, reference=reference, version=get_default_version(),
+                    validation_level=validation_level, encoding_chars=encoding_chars)
+        children = parse_segments(message, m.version, encoding_chars, validation_level,
+                                  m.structure_by_name)
     if m.name is not None and find_groups:
         m.children = []
         create_groups(m, children, validation_level)
